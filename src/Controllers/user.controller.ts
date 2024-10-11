@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, UploadedFiles, Put, Req, Res } from "@nestjs/common";
 import { User } from "../Model/user.schema";
-import { UserService } from "../Model/user.service";
+import { UserService } from "../Model/user.schema";
 import { JwtService } from '@nestjs/jwt'
 
 @Controller('/api/v1/user')

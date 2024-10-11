@@ -26,6 +26,16 @@ import { v4 as uuidv4 } from 'uuid';
     }),
 
 
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './public',
+        filename: (req, file, cb) => {
+          const ext = file.mimetype.split('/')[1];
+          cb(null, `${uuidv4()}-${Date.now()}.${ext}`);
+        },
+      })
+    }),
+
    ],
   controllers: [AppController],
   providers: [AppService],
