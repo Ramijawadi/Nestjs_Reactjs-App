@@ -1,6 +1,4 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -12,6 +10,20 @@ import { join } from 'path/posix';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { v4 as uuidv4 } from 'uuid';
+
+import { VideoController } from './Controllers/video.controller';
+import { VideoService } from './Services/video.service';
+import { UserService } from './Services/user.service';
+import { UserController } from './Controllers/user.controller';
+import { Video, VideoSchema } from './model/video.schema';
+import { User, UserSchema } from './model/user.schema';
+
+
+import { Module, RequestMethod, MiddlewareConsumer } from '@nestjs/common';
+import { isAuthenticated } from './Middlewares/app.middleware';
+import { TestModule } from './test/test.module';
+
+
 
 @Module({
   // imports: [MongooseModule.forRoot('mongodb://localhost:27017/Stream'),
@@ -36,11 +48,32 @@ import { v4 as uuidv4 } from 'uuid';
       })
     }),
 
+
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: Video.name, schema: VideoSchema }]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+    TestModule,
+
+
+
    ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [   VideoController, UserController],
+  providers: [ VideoService, UserService],
 })
-export class AppModule {}
+
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(isAuthenticated)
+      .exclude(
+        { path: 'api/v1/video/:id', method: RequestMethod.GET }
+      )
+      .forRoutes(VideoController);
+  }
+}
+
 
 
 // mongodb+srv://ramijawadi104:<db_password>@cluster0.rwhv9.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

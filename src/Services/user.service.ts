@@ -10,18 +10,21 @@ import { JwtService } from '@nestjs/jwt';
 export class UserService {
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>,
     ) { }
-
-
-        async signup(user: User): Promise<User> {
+     
+       async signup(user: User): Promise<User> {
             const salt = await bcrypt.genSalt();
             const hash = await bcrypt.hash(user.password, salt);
-            const reqBody = {
-                fullname: user.fullname,
-                email: user.email,
-                password: hash
-            }
-            const newUser = new this.userModel(reqBody);
-            return newUser.save();
+            // const reqBody = {
+            //     fullname: user.fullname,
+            //     email: user.email,
+            //     password: hash
+            // }
+
+            user.password = hash 
+            const newUser =  await this.userModel.create(user);
+
+            return newUser 
+            // return newUser.save();
         }
    
         async signin(user: User, jwt: JwtService): Promise<any> {
@@ -33,6 +36,8 @@ export class UserService {
                     return {
                         token: jwt.sign(payload),
                     };
+                
+            
                 }
                 return new HttpException('Incorrect username or password', HttpStatus.UNAUTHORIZED)
             }
@@ -41,6 +46,11 @@ export class UserService {
         async getOne(email): Promise<User> {
             return await this.userModel.findOne({ email }).exec();
         }
+         
 
-
+  // Get all users
+     async getAll(): Promise<User[]> {
+       return await this.userModel.find().exec();
+}
+ 
     }

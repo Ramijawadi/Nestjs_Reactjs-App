@@ -13,14 +13,12 @@ import { Request, Response } from 'express';
 @Injectable()
 export class VideoService {
     constructor(@InjectModel(Video.name) private videoModel: Model<VideoDocument>) { }
-
-    async createVideo(video: Object): Promise<Video> {
+   async createVideo(video: Object): Promise<Video> {
         const newVideo = new this.videoModel(video);
         return newVideo.save();
     }
 
-
-    async readVideo(id): Promise<any> {
+    async readVideo(id : any): Promise<any> {
         if (id.id) {
             return this.videoModel.findOne({ _id: id.id }).populate("createdBy").exec();
         }
@@ -39,6 +37,7 @@ export class VideoService {
                 const videoPath = statSync(join(process.cwd(), `./public/${video}`))
                 const CHUNK_SIZE = 1 * 1e6;
                 const start = Number(range.replace(/\D/g, ''));
+                console.log("start" , start)
                 const end = Math.min(start + CHUNK_SIZE, videoPath.size - 1);
                 const videoLength = end - start + 1;
                 response.status(206)
@@ -58,4 +57,17 @@ export class VideoService {
             console.error(e)
             throw new ServiceUnavailableException()
         }
-    }}
+    }
+
+    async update(id, video: Video): Promise<Video> {
+        return await this.videoModel.findByIdAndUpdate(id, video, { new: true })
+    }
+    async delete(id): Promise<any> {
+        return await this.videoModel.findByIdAndDelete(id);
+    }
+}
+
+
+
+
+    
