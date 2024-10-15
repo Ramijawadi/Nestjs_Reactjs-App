@@ -21,7 +21,6 @@ import { User, UserSchema } from './model/user.schema';
 
 import { Module, RequestMethod, MiddlewareConsumer } from '@nestjs/common';
 import { isAuthenticated } from './Middlewares/app.middleware';
-import { TestModule } from './test/test.module';
 
 
 
@@ -54,10 +53,7 @@ import { TestModule } from './test/test.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
-    TestModule,
-
-
-
+  
    ],
   controllers: [   VideoController, UserController],
   providers: [ VideoService, UserService],
