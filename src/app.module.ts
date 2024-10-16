@@ -30,10 +30,11 @@ import { isAuthenticated } from './Middlewares/app.middleware';
 
     JwtModule.register({
       secret,
-      signOptions: { expiresIn: '2h' },
+      signOptions: { expiresIn: '24h' },
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
+      serveRoot:"/assets"
     }),
 
 
